@@ -36,7 +36,7 @@ hist(gp_2)
 
 Try a t-test:
 ```{r}
-t.test(gp_1, gp_2)
+my_ttest <- t.test(gp_1, gp_2)
 ```
 
 - This p-value means that if these samples were drawn from populations with the same mean, the probability of taking two random samples with means *at least as different* as the sample means as we found by random chance (taking into account spread, n) is 19.8%. 
@@ -56,4 +56,79 @@ mwu
 
 - This p-value means that if these samples were drawn from populations with the same ranks, the probability of taking two random samples with ranks *at least as different* as the sample ranks in our samples is 28%. 
 
+There is no significant difference in ranks (often you'll see medians) between group 1 and group 2 (statistical summary)
 
+Median scores for group 1 (M = 14) and group 2 (M = 12) did not differ significantly (Mann Whitney U test: (df) = 86, p = 0.28)
+
+We are using rank based test to compare medians (that is what this all is)
+
+every other measure you report should be in line with data in the past (median as central tendency or mean as central tendency for example cannot both be the main data)
+
+mwu$p.value # pulling elements from the list of values by ?wilcox.test
+can also use kruskal.test
+
+## Linear Regression
+
+ - Simple linear regression (single dependent variable, a single independent variable)
+ 
+```{r, include=TRUE}
+# Make an exploratory plot of penguin body mass (y-axis) versus flipper length (x-axis)
+
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g)) + 
+  geom_point() +
+  geom_smooth(method = "lm") # be cautious about adding this
+
+```
+ 
+ Find a linear regression model using ordinary least squares describing the relationship between flipper length adn body mass for these penguins
+ 
+ 3 pieces:
+  - What type of model?
+  - What is the relationship to model (dependent variable ~(as a function of) independent variable(s))
+  - Where is the data that's used to create this model?
+```{r}
+penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins) # need to specify range
+
+penguin_lm
+```
+ - trying to model body mass as a function of flipper length
+  - y = B1(x) + Bo + E (B = beta)
+    - body mass = 49.7 is the slope that relates flipper length to body mass
+      - for every 1 mm increase in flipper length, I expect an increase of 49.7 grams increase in body mass (g/mm)
+      - intercept = -5780.83 (not meaningful, just tells us what the grams would be if the flipper length was 0)
+ 
+penguin_lm$coefficients[2]
+> flipper_length_mm 
+         49.68557 
+
+### Broom Package returns model outputs as tidy data frames
+
+```{r}
+penguin_lm_tidy <- broom::tidy(penguin_lm) # showing this is from the broom package by using broom:: (technically you do not need to put this)
+
+penguin_lm_tidy
+
+penguin_glance <- broom::glance(penguin_lm) # talking more about this wednesday
+```
+
+ How can I actually include my model equation in a report?
+ 
+```{r}
+extract_eq(model = penguin_lm, use_coefs = TRUE) # stores a lawtech version
+```
+ 
+```{r}
+plot(penguin_lm)
+```
+ 
+ one of the assumptions is the normality of the residuals (are the residuals normally distributing)
+ 
+ term: heterosedasticity : variance of residuals is not constant over course of the model
+ homosedasticity: variation stays relatively constant across model
+ 
+ 
+ 
+ 
+ 
+ 
+ 
